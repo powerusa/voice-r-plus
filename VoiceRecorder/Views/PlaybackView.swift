@@ -45,6 +45,7 @@ struct PlaybackView: View {
         }
         .navigationTitle("Playback")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbarColorScheme(.dark, for: .navigationBar)
         .alert("Rename Recording", isPresented: $showRenameAlert) {
             TextField("Name", text: $renameText)
             Button("Cancel", role: .cancel) {}
@@ -69,20 +70,21 @@ struct PlaybackView: View {
         VStack(spacing: 14) {
             ZStack {
                 Circle()
-                    .fill(.ultraThinMaterial)
+                    .fill(Color.black.opacity(0.28))
                     .frame(width: 118, height: 118)
                     .overlay {
                         Circle()
-                            .stroke(.white.opacity(0.36), lineWidth: 1)
+                            .stroke(Color.cyan.opacity(0.32), lineWidth: 1)
                     }
 
                 Image(systemName: "waveform.circle.fill")
                     .font(.system(size: 88))
-                    .foregroundStyle(.red, .pink)
+                    .foregroundStyle(.orange, .cyan)
             }
 
             Text(viewModel.recording.name)
                 .font(.title2.bold())
+                .foregroundStyle(.white)
                 .multilineTextAlignment(.center)
                 .lineLimit(3)
 
@@ -90,8 +92,8 @@ struct PlaybackView: View {
                 Label(TimeFormatter.date(viewModel.recording.createdAt), systemImage: "calendar")
                 Label(TimeFormatter.duration(viewModel.recording.duration), systemImage: "clock")
             }
-            .font(.caption.weight(.semibold))
-            .foregroundStyle(.secondary)
+            .font(.caption.monospaced().weight(.semibold))
+            .foregroundStyle(Color.white.opacity(0.56))
         }
         .frame(maxWidth: .infinity)
         .padding(24)
@@ -107,6 +109,7 @@ struct PlaybackView: View {
                 ),
                 in: 0...max(viewModel.duration, 1)
             )
+            .tint(.orange)
 
             HStack {
                 Text(TimeFormatter.duration(viewModel.currentTime))
@@ -114,7 +117,7 @@ struct PlaybackView: View {
                 Text(TimeFormatter.duration(viewModel.duration))
             }
             .font(.caption.monospacedDigit())
-            .foregroundStyle(.secondary)
+            .foregroundStyle(Color.white.opacity(0.58))
 
             HStack(spacing: 34) {
                 Button {
@@ -122,6 +125,7 @@ struct PlaybackView: View {
                 } label: {
                     Image(systemName: "gobackward.15")
                         .font(.system(size: 34))
+                        .foregroundStyle(Color.cyan.opacity(0.82))
                 }
                 .accessibilityLabel("Skip backward 15 seconds")
 
@@ -131,7 +135,7 @@ struct PlaybackView: View {
                     Image(systemName: viewModel.isPlaying ? "pause.circle.fill" : "play.circle.fill")
                         .font(.system(size: 76))
                         .symbolRenderingMode(.hierarchical)
-                        .foregroundStyle(.red)
+                        .foregroundStyle(.orange)
                 }
                 .accessibilityLabel(viewModel.isPlaying ? "Pause" : "Play")
 
@@ -140,6 +144,7 @@ struct PlaybackView: View {
                 } label: {
                     Image(systemName: "goforward.15")
                         .font(.system(size: 34))
+                        .foregroundStyle(Color.cyan.opacity(0.82))
                 }
                 .accessibilityLabel("Skip forward 15 seconds")
             }
@@ -156,16 +161,20 @@ struct PlaybackView: View {
                 showRenameAlert = true
             } label: {
                 Label("Rename", systemImage: "pencil")
+                    .font(.headline.monospaced())
                     .frame(maxWidth: .infinity)
             }
-            .buttonStyle(.bordered)
+            .buttonStyle(.borderedProminent)
+            .tint(Color.cyan.opacity(0.72))
             .controlSize(.large)
 
             ShareLink(item: viewModel.recording.fileURL) {
                 Label("Share Recording", systemImage: "square.and.arrow.up")
+                    .font(.headline.monospaced())
                     .frame(maxWidth: .infinity)
             }
-            .buttonStyle(.bordered)
+            .buttonStyle(.borderedProminent)
+            .tint(Color.orange.opacity(0.82))
             .controlSize(.large)
             .disabled(viewModel.errorMessage != nil)
 
@@ -173,6 +182,7 @@ struct PlaybackView: View {
                 showDeleteConfirmation = true
             } label: {
                 Label("Delete", systemImage: "trash")
+                    .font(.headline.monospaced())
                     .frame(maxWidth: .infinity)
             }
             .buttonStyle(.bordered)
@@ -185,12 +195,33 @@ struct PlaybackView: View {
 
 private extension View {
     func glassCard() -> some View {
-        background(.regularMaterial, in: RoundedRectangle(cornerRadius: 28, style: .continuous))
+        background(
+            LinearGradient(
+                colors: [
+                    Color.white.opacity(0.09),
+                    Color.black.opacity(0.34)
+                ],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            ),
+            in: RoundedRectangle(cornerRadius: 20, style: .continuous)
+        )
             .overlay {
-                RoundedRectangle(cornerRadius: 28, style: .continuous)
-                    .stroke(.white.opacity(0.26), lineWidth: 1)
+                RoundedRectangle(cornerRadius: 20, style: .continuous)
+                    .stroke(
+                        LinearGradient(
+                            colors: [
+                                Color.cyan.opacity(0.38),
+                                Color.white.opacity(0.10),
+                                Color.orange.opacity(0.28)
+                            ],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        ),
+                        lineWidth: 1
+                    )
             }
-            .shadow(color: .black.opacity(0.07), radius: 20, y: 12)
+            .shadow(color: .black.opacity(0.34), radius: 20, y: 12)
     }
 }
 

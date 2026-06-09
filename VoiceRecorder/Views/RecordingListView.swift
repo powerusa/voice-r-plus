@@ -13,9 +13,10 @@ struct RecordingListView: View {
             if recordings.isEmpty {
                 ContentUnavailableView(
                     "No Recordings",
-                    systemImage: "waveform",
-                    description: Text("Saved recordings will appear here.")
+                    systemImage: "waveform.path.ecg",
+                    description: Text("Voice logs will appear here.")
                 )
+                .foregroundStyle(.white.opacity(0.9), Color.cyan.opacity(0.68), Color.white.opacity(0.54))
                 .frame(maxWidth: .infinity, minHeight: 220)
             } else {
                 List {

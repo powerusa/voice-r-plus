@@ -41,6 +41,7 @@ struct HomeView: View {
             }
             .navigationTitle("Voice R+")
             .navigationBarTitleDisplayMode(.inline)
+            .toolbarColorScheme(.dark, for: .navigationBar)
             .navigationDestination(for: Recording.self) { recording in
                 PlaybackView(
                     recording: recording,
@@ -74,35 +75,45 @@ struct HomeView: View {
     private func header(width: CGFloat) -> some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(spacing: 10) {
-                Label("Local recorder", systemImage: "waveform.badge.mic")
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.secondary)
+                Label("Local recorder", systemImage: "antenna.radiowaves.left.and.right")
+                    .font(.caption.monospaced().weight(.semibold))
+                    .textCase(.uppercase)
+                    .foregroundStyle(Color.cyan.opacity(0.86))
                     .lineLimit(1)
                     .minimumScaleFactor(0.82)
                     .padding(.horizontal, 12)
                     .padding(.vertical, 7)
-                    .background(.ultraThinMaterial, in: Capsule())
+                    .background(Color.black.opacity(0.28), in: Capsule())
+                    .overlay {
+                        Capsule()
+                            .stroke(Color.cyan.opacity(0.24), lineWidth: 1)
+                    }
 
                 Spacer(minLength: 8)
 
                 Label("\(viewModel.recordings.count)", systemImage: "doc.text")
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.secondary)
+                    .font(.caption.monospaced().weight(.semibold))
+                    .foregroundStyle(Color.orange.opacity(0.88))
                     .lineLimit(1)
                     .padding(.horizontal, 12)
                     .padding(.vertical, 7)
-                    .background(.ultraThinMaterial, in: Capsule())
+                    .background(Color.black.opacity(0.28), in: Capsule())
+                    .overlay {
+                        Capsule()
+                            .stroke(Color.orange.opacity(0.24), lineWidth: 1)
+                    }
             }
 
             Text("Voice R+")
-                .font(.system(size: titleFontSize(for: width), weight: .bold, design: .rounded))
+                .font(.system(size: titleFontSize(for: width), weight: .black, design: .rounded))
+                .foregroundStyle(.white)
                 .lineLimit(1)
                 .minimumScaleFactor(0.7)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
-            Text("Record clearly. Play back anytime.")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
+            Text("Capture clear voice logs. Play back anytime.")
+                .font(.subheadline.weight(.medium))
+                .foregroundStyle(Color.white.opacity(0.64))
                 .lineLimit(2)
                 .fixedSize(horizontal: false, vertical: true)
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -116,15 +127,21 @@ struct HomeView: View {
         return VStack(spacing: compact ? 16 : 22) {
             VStack(spacing: 10) {
                 Label(statusText, systemImage: statusSymbol)
-                    .font(.subheadline.weight(.semibold))
+                    .font(.subheadline.monospaced().weight(.bold))
+                    .textCase(.uppercase)
                     .foregroundStyle(statusColor)
                     .lineLimit(1)
                     .padding(.horizontal, 14)
                     .padding(.vertical, 8)
-                    .background(statusColor.opacity(0.12), in: Capsule())
+                    .background(statusColor.opacity(0.13), in: Capsule())
+                    .overlay {
+                        Capsule()
+                            .stroke(statusColor.opacity(0.32), lineWidth: 1)
+                    }
 
                 Text(TimeFormatter.duration(viewModel.currentTime))
-                    .font(.system(size: timerFontSize(for: width), weight: .semibold, design: .rounded).monospacedDigit())
+                    .font(.system(size: timerFontSize(for: width), weight: .black, design: .rounded).monospacedDigit())
+                    .foregroundStyle(.white)
                     .minimumScaleFactor(0.7)
                     .lineLimit(1)
             }
@@ -151,32 +168,62 @@ struct HomeView: View {
             }
         }
         .padding(panelPadding(for: width))
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 34, style: .continuous))
+        .background(
+            LinearGradient(
+                colors: [
+                    Color.white.opacity(0.105),
+                    Color.black.opacity(0.34)
+                ],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            ),
+            in: RoundedRectangle(cornerRadius: 24, style: .continuous)
+        )
         .overlay {
-            RoundedRectangle(cornerRadius: 34, style: .continuous)
-                .stroke(.white.opacity(0.44), lineWidth: 1)
+            RoundedRectangle(cornerRadius: 24, style: .continuous)
+                .stroke(
+                    LinearGradient(
+                        colors: [
+                            Color.cyan.opacity(0.48),
+                            Color.white.opacity(0.12),
+                            Color.orange.opacity(0.34)
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ),
+                    lineWidth: 1
+                )
         }
-        .shadow(color: Color.blue.opacity(0.10), radius: 28, y: 16)
-        .shadow(color: .black.opacity(0.06), radius: 18, y: 10)
+        .shadow(color: Color.cyan.opacity(0.10), radius: 28, y: 16)
+        .shadow(color: .black.opacity(0.34), radius: 18, y: 10)
     }
 
     private var waveform: some View {
         ZStack {
-            RoundedRectangle(cornerRadius: 28, style: .continuous)
-                .fill(Color(.secondarySystemGroupedBackground).opacity(0.72))
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .fill(Color.black.opacity(0.34))
 
-            RoundedRectangle(cornerRadius: 28, style: .continuous)
-                .stroke(.white.opacity(0.44), lineWidth: 1)
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .stroke(Color.cyan.opacity(0.22), lineWidth: 1)
+
+            HStack(spacing: 7) {
+                ForEach(0..<5, id: \.self) { _ in
+                    Rectangle()
+                        .fill(Color.white.opacity(0.045))
+                        .frame(width: 1)
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .center)
 
             if !viewModel.isRecording {
                 VStack(spacing: 10) {
                     Image(systemName: "waveform")
                         .font(.system(size: 28, weight: .semibold))
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Color.cyan.opacity(0.62))
 
-                    Text("Ready to capture audio")
-                        .font(.caption.weight(.medium))
-                        .foregroundStyle(.secondary)
+                    Text("Audio channel standing by")
+                        .font(.caption.monospaced().weight(.semibold))
+                        .foregroundStyle(Color.white.opacity(0.54))
                         .lineLimit(1)
                         .minimumScaleFactor(0.8)
                 }
@@ -212,11 +259,13 @@ struct HomeView: View {
             viewModel.isPaused ? viewModel.resumeRecording() : viewModel.pauseRecording()
         } label: {
             Label(viewModel.isPaused ? "Resume" : "Pause", systemImage: viewModel.isPaused ? "play.fill" : "pause.fill")
+                .font(.headline.monospaced())
                 .lineLimit(1)
                 .minimumScaleFactor(0.82)
                 .frame(maxWidth: .infinity)
         }
-        .buttonStyle(.bordered)
+        .buttonStyle(.borderedProminent)
+        .tint(Color.cyan.opacity(0.72))
         .controlSize(.large)
         .disabled(!viewModel.isRecording)
     }
@@ -226,11 +275,13 @@ struct HomeView: View {
             viewModel.stopAndSaveRecording()
         } label: {
             Label("Stop and Save", systemImage: "stop.fill")
+                .font(.headline.monospaced())
                 .lineLimit(1)
                 .minimumScaleFactor(0.82)
                 .frame(maxWidth: .infinity)
         }
         .buttonStyle(.borderedProminent)
+        .tint(Color.orange)
         .controlSize(.large)
         .disabled(!viewModel.isRecording)
     }
@@ -250,7 +301,7 @@ struct HomeView: View {
     private var statusColor: Color {
         if viewModel.isRecording && viewModel.isPaused { return .orange }
         if viewModel.isRecording { return .red }
-        return .blue
+        return .cyan
     }
 
     private var errorBinding: Binding<Bool> {
@@ -309,9 +360,9 @@ struct HomeView: View {
     private func waveformColor(index: Int, count: Int) -> LinearGradient {
         let isRightSide = index > count / 2
         return LinearGradient(
-            colors: viewModel.isRecording
-                ? (isRightSide ? [.purple, .blue] : [.blue, .cyan])
-                : [Color.secondary.opacity(0.42), Color.secondary.opacity(0.22)],
+        colors: viewModel.isRecording
+                ? (isRightSide ? [.orange, .red] : [.cyan, .blue])
+                : [Color.cyan.opacity(0.32), Color.white.opacity(0.14)],
             startPoint: .top,
             endPoint: .bottom
         )

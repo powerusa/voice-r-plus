@@ -9,17 +9,21 @@ struct RecordButtonView: View {
         Button(action: action) {
             ZStack {
                 Circle()
-                    .fill(activeColor.opacity(isRecording ? 0.15 : 0.10))
-                    .frame(width: 132, height: 132)
+                    .fill(activeColor.opacity(isRecording ? 0.18 : 0.10))
+                    .frame(width: 138, height: 138)
                     .overlay {
                         Circle()
-                            .stroke(activeColor.opacity(isRecording ? 0.24 : 0.12), lineWidth: 10)
-                            .blur(radius: 10)
+                            .stroke(activeColor.opacity(isRecording ? 0.34 : 0.16), lineWidth: 8)
+                            .blur(radius: 8)
                     }
 
                 Circle()
-                    .stroke(activeColor.opacity(isRecording && !isPaused ? 0.32 : 0.14), lineWidth: 2)
-                    .frame(width: 118, height: 118)
+                    .stroke(activeColor.opacity(isRecording && !isPaused ? 0.76 : 0.34), style: StrokeStyle(lineWidth: 2, dash: [9, 7]))
+                    .frame(width: 126, height: 126)
+
+                Circle()
+                    .stroke(Color.white.opacity(0.14), lineWidth: 1)
+                    .frame(width: 108, height: 108)
 
                 Circle()
                     .fill(
@@ -30,7 +34,11 @@ struct RecordButtonView: View {
                         )
                     )
                     .frame(width: 96, height: 96)
-                    .shadow(color: activeColor.opacity(0.32), radius: 24, y: 12)
+                    .overlay {
+                        Circle()
+                            .stroke(Color.white.opacity(0.34), lineWidth: 1)
+                    }
+                    .shadow(color: activeColor.opacity(0.42), radius: 24, y: 12)
 
                 Image(systemName: symbolName)
                     .font(.system(size: 38, weight: .bold))
@@ -50,13 +58,15 @@ struct RecordButtonView: View {
     }
 
     private var activeColor: Color {
-        if isRecording && isPaused { return .blue }
-        return .red
+        if isRecording && isPaused { return .cyan }
+        if isRecording { return .red }
+        return .orange
     }
 
     private var gradientColors: [Color] {
-        if isRecording && isPaused { return [.blue, .cyan] }
-        return [.red, .pink]
+        if isRecording && isPaused { return [.cyan, .blue] }
+        if isRecording { return [.red, .orange] }
+        return [.orange, .red]
     }
 
     private var accessibilityLabel: String {
